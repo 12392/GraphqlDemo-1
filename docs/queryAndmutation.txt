@@ -1,0 +1,231 @@
+#-------------------********************------------------------
+1)Feilds - You can see immediately that the query has exactly the same shape as the result. 
+This is essential to GraphQL, because you always get back what you expect,
+and the server knows exactly what fields the client is asking for.
+
+#Example Feilds
+# query{
+#   authors{
+#     name
+#     email
+#     id
+#     bookCount
+#     books{
+#       name
+#       description
+#       chapters{
+#         name
+#       }
+#     }
+#   }
+# }
+
+
+#-------------------********************------------------------
+2)Arguments - We can get a specific data by passing values in arguments  
+
+#Example Arguments
+# query{
+#   author(id:1){
+#     name
+#     email
+#     id
+#     bookCount
+#     books{
+#       name
+#       description
+#       chapters{
+#         name
+#       }
+#     }
+#   }
+
+
+#-------------------********************------------------------
+3) Aliases - they let you rename the result of a field to anything you want.
+
+#Example Aliases
+# query{
+#   Writer1: author(id:1){
+#     name
+#     email
+#     id
+#     bookCount
+#     books{
+#       name
+#       description
+#       chapters{
+#         name
+#       }
+#     }
+#   }
+#   Writer2: author(id:2){
+#     name
+#     email
+#     id
+#     bookCount
+#     books{
+#       name
+#       description
+#       chapters{
+#         name
+#       }
+#     }
+#   }
+# }
+
+#-------------------********************------------------------
+4) Fragments - we had a relatively complicated page in our app, which lets us look at two authors side by side, 
+along with their books. You can imagine that such a query could quickly get complicated, 
+because we would need to repeat the fields at least once - one for each side of the comparison.
+
+-->  Fragments let you construct sets of fields, and then include them in queries where you need to
+
+#Example Fragments
+# {
+#   leftComparison: author(id: 1) {
+#     ...comparisonFields
+#   }
+#   rightComparison: author(id: 3) {
+#     ...comparisonFields
+#   }
+# }
+
+# fragment comparisonFields on Author{
+#   name
+#   books {
+#     name
+#   }
+# }
+
+
+#-------------------********************------------------------
+#Example without using query(operation name) we are fetching data 
+# {
+# authors{
+#     name
+#     email
+#     id
+#     bookCount
+#     books{
+#       name
+#       description
+#       chapters{
+#         name
+#       }
+#     }
+# }
+# }
+
+5) operation name - The operation type is either query, mutation, or subscription and describes what type of operation you're intending to do.
+
+--> The operation name is a meaningful and explicit name for your operation. 
+It is only required in multi-operation documents, but its use is encouraged because it is very helpful for debugging and server-side logging. 
+
+-->it is easier to identify a query in your codebase by name instead of trying to decipher the contents. 
+Think of this just like a function name in your favorite programming language
+
+#Example using query(operation name) we are fetching data 
+# query authorData{
+#   authors {
+#     name
+#     books{
+#       name
+#     }
+#   }
+# }
+
+
+#-------------------********************------------------------
+6) Variable - we have been writing all of our arguments inside the query string. But in most applications, the arguments to fields will be dynamic
+It wouldn't be a good idea to pass these dynamic arguments directly in the query string, 
+because then our client-side code would need to dynamically manipulate the query string at runtime, 
+and serialize it into a GraphQL-specific format. Instead, 
+GraphQL has a first-class way to factor dynamic values out of the query, and pass them as a separate dictionary. These values are called variables.
+
+#Example Default Variable
+# query writerData($id: ID = 1){
+#   author(id: $id) {
+#     name
+#     books{
+#       name
+#     }
+#   }
+# }
+# with dynamic variable
+# query authorData($id: ID!){
+#   author(id: $id) {
+#     name
+#     books{
+#       name
+#     }
+#   }
+# }
+#query variables
+#{
+   "id": 1
+#}
+
+
+
+#-------------------********************------------------------
+7) Directives - We needed to use a new feature in GraphQL called a directive. 
+A directive can be attached to a field or fragment inclusion, and can affect execution of the query in any way the server desires. 
+The core GraphQL specification includes exactly two directives, which must be supported by any spec-compliant GraphQL server implementation:
+
+    @include(if: Boolean) Only include this field in the result if the argument is true.
+    @skip(if: Boolean) Skip this field if the argument is true.
+
+#Example of Directives with Default Variable
+# query writerData($id: ID=1 ,$chapter_present: Boolean = true){
+#   author(id: $id) {
+#     name
+#     books{
+#       name
+#       chapters @include(if:$chapter_present){
+#         name
+#       }
+#     }
+#   }
+# }
+
+8) mutation - Its for creating data or updating data
+# mutation createAuthor($name: String!, $email: String!){
+  
+#   createAuthor(input: {
+#     name: $name
+#     email: $email
+    
+#   }){
+#     author{
+#       name
+#       email
+#     }
+#   }
+#}
+#Example update the data
+# mutation createAuthor($name: String!){
+  
+#   updateAuthor(input: {
+#     id: 3
+#     name: $name
+    
+#   }){
+#     author{
+#       name
+#       email
+#     }
+#   }
+# }
+
+
+Topic left --> Inline fragment , meta Feilds
+
+
+
+
+
+
+
+
+
