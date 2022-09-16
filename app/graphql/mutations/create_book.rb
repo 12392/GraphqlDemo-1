@@ -1,21 +1,14 @@
 class Mutations::CreateBook < Mutations::BaseMutation
 
-    description "Creates Book"
+    description "Create Book"
 
-    argument :name, String
-    argument :description, String
-    argument :author_id, Integer
-  
-    field :book, Types::BookType, null: false
-    field :errors, [String], null: false
+    argument :name, String, required: true
+    argument :description, String, required: true
+    
+    type Types::BookType
 
-    def resolve(name:, description:, author_id:)
-        book = Book.new(name: name, description: description, author_id: author_id)
-        if(book.save)
-          {book: book, errors: []}
-        else
-          {book: [], errors: book.errors.full_messages}
-        end
+    def resolve(name: nil, description: nil)
+        Book.create!(name: name, description: description, author: context[:current_user])
     end
 
 end

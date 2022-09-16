@@ -6,6 +6,7 @@ module Types
     field :name, String
     field :description, String
     field :author_id, Integer
+    field :posted_by, AuthorType, null: true, method: :author
     field :chapters, [Types::ChapterType], null: false
     field :created_at, GraphQL::Types::ISO8601DateTime, null: false
     field :updated_at, GraphQL::Types::ISO8601DateTime, null: false

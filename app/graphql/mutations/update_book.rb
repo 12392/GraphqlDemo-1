@@ -1,23 +1,30 @@
 class Mutations::UpdateBook < Mutations::BaseMutation
 
-    description "Updates Book"
+    description "Update Book"
 
     argument :name, String
     argument :description, String
-    argument :author_id, Integer
     argument :id, ID, required: true
   
     field :book, Types::BookType, null: false
     field :errors, [String], null: false
 
-    def resolve(id:, name:, description:, author_id:)
-        book = Book.find(id)
-        book.update_attributes(name: name, description: description, author_id: author_id)
+    #type Types::BookType
+
+    def resolve(id:nil, name:nil, description:nil)
+
+      unless context[:current_user].nil?
+        author = context[:current_user]
+        book = author.books.find(id)
+        book.update_attributes(name: name, description: description)
         if(book.save)
           {book: book, errors: []}
         else
           {book: [], errors: book.errors.full_messages}
         end
+      else
+        raise GraphQL::ExecutionError, "Authentication failed, Sign in first"
+      end
     end
 
 end

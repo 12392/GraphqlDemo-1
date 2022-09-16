@@ -22,6 +22,14 @@ module Types
       Book.all
     end
 
+    field :chapters, [Types::ChapterType], null: true
+    
+    def chapters
+      Chapter.all
+    end
+
+    
+
 
     #authors/:id
     field :author, Types::AuthorType, null: false do
